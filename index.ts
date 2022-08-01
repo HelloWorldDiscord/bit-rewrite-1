@@ -1,6 +1,7 @@
 import { Collection } from "@discordjs/collection";
 import fs from "fs"
 import path from "path"
+require("dotenv").config()
 
 // Require the necessary discord.js classes
 const { Client, GatewayIntentBits } = require('discord.js');
@@ -26,4 +27,4 @@ client.once('ready', () => {
 });
 
 // Login to Discord with your client's token
-client.login(process.env['TOKEN']);
+client.login(process.env.TOKEN);
