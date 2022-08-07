@@ -1,17 +1,18 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Client, CommandInteraction, Message, EmbedBuilder } from "discord.js";
+import client from "../index"
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("ping")
     .setDescription("Pings the websocket."),
 
-  async execute(interaction: CommandInteraction, client: Client) {
-    const message = (await interaction.reply({
+  async execute(interaction: CommandInteraction) {
+    const msg = await interaction.reply({
       content: "Ping?",
       fetchReply: true,
-    })) as unknown as Message;
-    const hostLatency = message.createdTimestamp - interaction.createdTimestamp;
+    })
+    const hostLatency = msg.createdTimestamp - interaction.createdTimestamp;
     const apiLatency = Math.round(client.ws.ping);
     const pingEmbed = new EmbedBuilder()
       .setTitle("Pong!")

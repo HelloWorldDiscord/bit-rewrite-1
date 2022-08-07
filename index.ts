@@ -1,4 +1,5 @@
 import { Collection } from "@discordjs/collection";
+import { CommandInteraction } from "discord.js";
 import fs from "fs"
 import path from "path"
 require("dotenv").config()
@@ -26,5 +27,24 @@ client.once('ready', () => {
 	console.log('Ready!');
 });
 
+client.on('interactionCreate', async (interaction: CommandInteraction) => {
+	if (!interaction.isChatInputCommand()) return;
+
+	const command = client.commands.get(interaction.commandName);
+
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+	}
+});
+
+
+
 // Login to Discord with your client's token
 client.login(process.env.TOKEN);
+
+export default client
