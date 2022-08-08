@@ -4,7 +4,8 @@ import Discord, {
     EmbedBuilder,
     ButtonBuilder,
     Embed,
-    ButtonStyle
+    ButtonStyle,
+    ButtonComponent
   } from "discord.js"
   
   /**
@@ -23,7 +24,7 @@ import Discord, {
     timeout = 120000,
     defPage?: number
   ) => {
-    let likeButton: Button
+    let likeButton: ButtonBuilder
     let commentButton: ButtonBuilder
     if (!pages) throw new Error("Pages are not given.");
     if (!buttonList) throw new Error("Buttons are not given.");
@@ -41,13 +42,12 @@ import Discord, {
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(buttonList);
     components.push(row)
   
-    //has the interaction already been deferred? If not, defer the reply.
     if (interaction.deferred == false) {
       await interaction.deferReply();
     }
   
     const curPage = await interaction.editReply({
-      embeds: [pages[page].setFooter({ text: `Page ${page + 1} / ${pages.length}` })],
+      embeds: [pages[page]],
       components: [row],
       // @ts-ignore
       fetchReply: true,
@@ -76,13 +76,13 @@ import Discord, {
           page = page > 0 ? --page : pages.length - 1;
           if (page === 2) {
             if (components.length > 1) components.pop()
-            likeButton = new MessageButton().setCustomId(`likeuser-${pages[0].fields[1].value}`).setStyle("PRIMARY").setLabel("Like")
-            const likeRow = new MessageActionRow().addComponents(likeButton)
+            likeButton = new ButtonBuilder().setCustomId(`likeuser-${pages[0].fields[1].value}`).setStyle(ButtonStyle.Primary).setLabel("Like")
+            const likeRow = new ActionRowBuilder<ButtonBuilder>().addComponents(likeButton)
             components.push(likeRow)
           } else if (page === 3) {
             if (components.length > 1) components.pop()
-            commentButton = new MessageButton().setCustomId(`commentuser-${pages[0].fields[1].value}`).setStyle("PRIMARY").setLabel("Comment")
-            const commentRow = new MessageActionRow().addComponents(commentButton)
+            commentButton = new ButtonBuilder().setCustomId(`commentuser-${pages[0].fields[1].value}`).setStyle(ButtonStyle.Primary).setLabel("Comment")
+            const commentRow = new ActionRowBuilder<ButtonBuilder>().addComponents(commentButton)
             components.push(commentRow)
           } else {
             if (components.length > 1) {
@@ -101,13 +101,13 @@ import Discord, {
           page = page + 1 < pages.length ? ++page : 0;
           if (page === 2) {
             if (components.length > 1) components.pop()
-            likeButton = new MessageButton().setCustomId(`likeuser-${pages[0].fields[1].value}`).setStyle("PRIMARY").setLabel("Like")
-            const likeRow = new MessageActionRow().addComponents(likeButton)
+            likeButton = new ButtonBuilder().setCustomId(`likeuser-${pages[0].fields[1].value}`).setStyle(ButtonStyle.Primary).setLabel("Like")
+            const likeRow = new ActionRowBuilder<ButtonBuilder>().addComponents(likeButton)
             components.push(likeRow)
           } else if (page === 3) {
             if (components.length > 1) components.pop()
-            commentButton = new MessageButton().setCustomId(`commentuser-${pages[0].fields[1].value}`).setStyle("PRIMARY").setLabel("Comment")
-            const commentRow = new MessageActionRow().addComponents(commentButton)
+            commentButton = new ButtonBuilder().setCustomId(`commentuser-${pages[0].fields[1].value}`).setStyle(ButtonStyle.Primary).setLabel("Comment")
+            const commentRow = new ActionRowBuilder<ButtonBuilder>().addComponents(commentButton)
             components.push(commentRow)
           } else {
             if (components.length > 1) {
@@ -120,7 +120,7 @@ import Discord, {
       }
       await i.deferUpdate();
       await i.editReply({
-        embeds: [pages[page].setFooter({ text: `Page ${page + 1} / ${pages.length}` })],
+        embeds: [pages[page]],
         components: components,
       });
       collector.resetTimer();
@@ -128,13 +128,13 @@ import Discord, {
   
     collector.on("end", (_: any, reason: any) => {
       if (reason !== "messageDelete") {
-        const disabledRow = new MessageActionRow().addComponents(
+        const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
           buttonList[0].setDisabled(true),
           buttonList[1].setDisabled(true)
         );
         // @ts-ignore
         curPage.edit({
-          embeds: [pages[page].setFooter({ text: `Page ${page + 1} / ${pages.length}` })],
+          embeds: [pages[page]],
           components: [disabledRow],
         });
       }

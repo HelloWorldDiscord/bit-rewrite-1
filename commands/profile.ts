@@ -1,5 +1,6 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import 
+import { ActionRowBuilder, ChatInputCommandInteraction, EmbedBuilder, SelectMenuBuilder, SlashCommandBuilder } from "discord.js";
+import ProfileSchema from "../schemas/ProfileSchema";
+import generateProfile from "../utils/generateProfile";
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,14 +13,34 @@ module.exports = {
                 generateProfile(interaction.user.id, interaction)
             }
             if (interaction.options.getSubcommand() === "help") { //? display docs for profile command
-                const embed = new Discord.MessageEmbed()
+                const embed = new EmbedBuilder()
                     .setTitle("Profile Command")
-                    .addField("No Args (  )", "Displays your profile if it exists.")
-                    .addField("Help (help)", "Displays this message.")
-                    .addField("Search Users (search [name or id])", "Displays a user's profile if it exists.")
-                    .addField("Setup Profile (setup)", "Sets up your profile.")
-                    .addField("Set Profile Picture (setpfp)", "Sets your profile picture.")
-                    .addField("Set Bio (setbio)", "Sets your bio.")
+                    .addFields([
+                        {
+                            name: "No Args ( )",
+                            value: "Displays your profile if it exists."
+                        },
+                        {
+                            name: "Help (help)",
+                            value: "Displays this message."
+                        },
+                        {
+                            name: "Search Uers (search [name or id])",
+                            value: "Displays a user's profile if it exists."
+                        },
+                        {
+                            name: "Setup Profile (setup)",
+                            value: "Sets up your profile."
+                        },
+                        {
+                            name: "Set Profile Picture (setpfp)",
+                            value: "Sets your profile picture.",
+                        },
+                        {
+                            name: "Set Bio (setbio)",
+                            value: "Sets your bio."
+                        }
+                    ])
                     .setColor("#5856d6")
                 interaction.reply({ embeds: [embed] })
             }
@@ -36,14 +57,14 @@ module.exports = {
                         if (err) return interaction.reply({ content: "An error occured." })
                         if (results.length === 0 || !results) return interaction.reply({ content: "User not found." })
                         if (results.length > 1) {
-                            const embed = new Discord.MessageEmbed()
+                            const embed = new EmbedBuilder()
                                 .setTitle("Multiple Users Found")
                             let resultsarray = []
                             for (const doc of results) {
                                 resultsarray.push(doc.displayName)
                             }
                             embed.setDescription(`${resultsarray.join("\n")}\n\nPlease use the dropdown list to select a user, or use the search command again with a more specific query.`)
-                            const embedList = new Discord.MessageSelectMenu()
+                            const embedList = new SelectMenuBuilder()
                                 .setCustomId(`profile-search-${interaction.user.id}`)
                                 .setPlaceholder("Select a user")
                                 .setOptions([]);
@@ -54,7 +75,7 @@ module.exports = {
                                     value: `${resultsarray[i]}`,
                                 })
                             }
-                            const row = new Discord.MessageActionRow()
+                            const row = new ActionRowBuilder<SelectMenuBuilder>()
                                 .addComponents(embedList)
                             interaction.reply({ embeds: [embed], components: [row] })
                         } else {
