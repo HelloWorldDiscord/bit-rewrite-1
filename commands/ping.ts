@@ -8,6 +8,7 @@ module.exports = {
     .setDescription("Pings the websocket."),
 
   async execute(interaction: CommandInteraction) {
+    console.log("Runs")
     const msg = await interaction.reply({
       content: "Ping?",
       fetchReply: true,

@@ -2,7 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction, ApplicationCommandOpt
 
 module.exports = {
     data: new ContextMenuCommandBuilder()
-    .setName("mark")
+    .setName("Mark Message")
     .setType(ApplicationCommandType.Message),
     async execute(interaction: ContextMenuCommandInteraction) {
         const modal = new ModalBuilder()
@@ -11,7 +11,7 @@ module.exports = {
         
         const timeout = new TextInputBuilder()
         .setCustomId("timeout")
-        .setLabel("In minutes, how long until this message should be deleted?")
+        .setLabel("Minutes until deletion:")
         .setRequired(true)
         .setStyle(TextInputStyle.Short)
 
